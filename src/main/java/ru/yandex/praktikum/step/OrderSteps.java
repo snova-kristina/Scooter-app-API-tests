@@ -25,7 +25,7 @@ public class OrderSteps {
 		createOrderRequest.setDeliveryDate(deliveryDate);
 		createOrderRequest.setComment(comment);
 		createOrderRequest.setColor(color);
-		return orderClient.createOrder(createOrderRequest).then();
+		return orderClient.createOrder(createOrderRequest).then().log().all();
 	}
 
 	@Step("Send GET request to /api/v1/orders for getting a list of orders")
@@ -35,6 +35,6 @@ public class OrderSteps {
 		getOrdersRequest.setNearestStation(nearestStation);
 		getOrdersRequest.setLimit(limit);
 		getOrdersRequest.setPage(page);
-		return orderClient.getOrders(getOrdersRequest).then();
+		return orderClient.getOrders(getOrdersRequest).then().log().all();
 	}
 }

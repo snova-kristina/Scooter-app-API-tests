@@ -1,15 +1,12 @@
 package ru.yandex.praktikum;
 
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.http.ContentType;
 import jdk.jfr.Description;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.HttpStatus;
 import org.junit.Test;
 
-import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
-import static ru.yandex.praktikum.config.Config.BASE_URI;
 
 public class CreateCourierTest extends BaseTestCourier {
 
@@ -22,7 +19,6 @@ public class CreateCourierTest extends BaseTestCourier {
 
 		courierSteps
 				.createCourier(login, password, firstName)
-				.log().all()
 				.statusCode(HttpStatus.SC_CREATED)
 				.body("ok", is(true));
 
@@ -44,7 +40,6 @@ public class CreateCourierTest extends BaseTestCourier {
 				.createCourier(login, password, firstName);
 		courierSteps
 				.createCourier(login, "anotherPassword", "anotherFirstName")
-				.log().all()
 				.statusCode(HttpStatus.SC_CONFLICT)
 				.body("code", is(409)).and().body("message", is(errorMessage));
 	}
@@ -57,14 +52,7 @@ public class CreateCourierTest extends BaseTestCourier {
 		String password = RandomStringUtils.randomAlphanumeric(10);
 		String firstName = RandomStringUtils.randomAlphanumeric(10);
 
-		given()
-				.baseUri(BASE_URI)
-				.contentType(ContentType.JSON)
-				.body("{\"password\":\"" + password + "\",\"firstName\":\"" + firstName + "\"}")
-				.when()
-				.post("/courier")
-				.then()
-				.log().all()
+		courierSteps.createCourier("", password, firstName)
 				.statusCode(HttpStatus.SC_BAD_REQUEST)
 				.body("code", is(400)).and().body("message", is(errorMessage));
 	}

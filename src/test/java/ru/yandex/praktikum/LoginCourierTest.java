@@ -4,16 +4,13 @@ import io.qameta.allure.junit4.DisplayName;
 import io.restassured.RestAssured;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
-import io.restassured.http.ContentType;
 import jdk.jfr.Description;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.HttpStatus;
 import org.junit.Test;
 
-import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static ru.yandex.praktikum.config.Config.BASE_URI;
 
 public class LoginCourierTest extends BaseTestCourier {
 
@@ -27,8 +24,7 @@ public class LoginCourierTest extends BaseTestCourier {
 		String firstName = RandomStringUtils.randomAlphanumeric(10);
 
 		courierSteps
-				.createCourier(login, password, firstName)
-				.log().all();
+				.createCourier(login, password, firstName);
 
 		courierId = courierSteps
 				.login(login, password)
@@ -36,7 +32,6 @@ public class LoginCourierTest extends BaseTestCourier {
 
 		courierSteps
 				.login(login, password)
-				.log().all()
 				.statusCode(HttpStatus.SC_OK)
 				.body("id", notNullValue());
 	}
@@ -55,7 +50,6 @@ public class LoginCourierTest extends BaseTestCourier {
 
 		courierSteps
 				.login("login", password)
-				.log().all()
 				.statusCode(HttpStatus.SC_NOT_FOUND)
 				.body("code", is(404)).and().body("message", is(errorMessage));
 	}
@@ -73,14 +67,8 @@ public class LoginCourierTest extends BaseTestCourier {
 		courierSteps
 				.createCourier(login, password, firstName);
 
-		given()
-				.baseUri(BASE_URI)
-				.contentType(ContentType.JSON)
-				.body("{\"password\":\"" + password + "\"}")
-				.when()
-				.post("/courier/login")
-				.then()
-				.log().all()
+		courierSteps
+				.login("", password)
 				.statusCode(HttpStatus.SC_BAD_REQUEST)
 				.body("code", is(400)).and().body("message", is(errorMessage));
 	}
